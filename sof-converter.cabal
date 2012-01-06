@@ -1,0 +1,20 @@
+Name:                sof-converter
+Version:             0.1
+Synopsis:            Wrangles Science of Fiction episodes into nicely-tagged mp3s
+-- Description:         
+Homepage:            http://wjt.me.uk/sof
+License:             BSD3
+License-file:        LICENSE
+Author:              Will Thompson
+Maintainer:          will@willthompson.co.uk
+Copyright:           2011–2012 Will Thompson
+Category:            Sound
+Build-type:          Simple
+Cabal-version:       >=1.2
+
+
+Executable sof-converter
+  Main-is: sof-converter.hs
+  Build-depends: haskell2010
+               , directory
+               , process
