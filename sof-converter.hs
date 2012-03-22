@@ -1,3 +1,8 @@
+-- Usage:
+-- • Put all your raw episode files (yyyymmddhh.mp3) into a directory;
+-- • Update 'episodes' and 'tagEpisode';
+-- • Run this in that directory. It will put temporary files into 'wip' and
+--   finished items into 'done' below CWD.
 import Control.Monad
 import System.Process
 import System.Exit
@@ -26,39 +31,20 @@ data Segment =
 episodes :: [Episode]
 episodes =
     [
-      Episode "20111002" "Recap"
-        [ Segment "17" "0.00" "57.03.5"
+    {-
+      Episode "20120212" "Errata"
+        [ Segment "17" "2.15.5" "59.57"
         ]
-    , Episode "20111009" "Chaos (with Niraj Lal)"
-        [ Segment "17" "0.00" "57.07.5"
+    , Episode "20120219" "Hybrids (with Djuke Veldhuis)"
+        [ Segment "17" "4.45" "60.0"
         ]
-    , Episode "20111016" "Dystopias and Utopias"
-        [ Segment "16" "57.45" "EOF"
-        , Segment "17" "0.00" "56.57"
+    , Episode "20120304" "Conspiracy"
+        [ Segment "17" "3.15" "59.55"
         ]
-    , Episode "20111023" "Stress (with Djuke Veldhuis)"
-        [ Segment "16" "57.46" "EOF"
-        , Segment "17" "0.00" "56.58.5"
-        ]
-    , Episode "20111030" "Biotechnology (with Steve Frenk)"
-        [ Segment "18" "0.15" "57.03"
-        ]
-    , Episode "20111106" "Four Fundamental Forces (with Michael Conterio)"
-        [ Segment "17" "58.48.5" "EOF"
-        , Segment "18" "0.00" "57.02.5"
-        ]
-    , Episode "20111113" "Environment (with Rachel Kennerley)"
-        [ Segment "18" "3.00" "57.12"
-        ]
-    , Episode "20111120" "Music"
-        [ Segment "18" "1.57" "EOF"
-        ]
-    , Episode "20111127" "Mathematics and Mathematicians (with Trevor Wood)"
-        [ Segment "18" "4.34" "EOF"
-        ]
-    , Episode "20111204" "Cryptography (with James Grime)"
-        [ Segment "18" "3.33.5" "EOF"
-        , Segment "19" "0.00" "0.13.25"
+    ,-}
+      Episode "20120311" "Steampunk, Shams and Space Cowboys (with Kat Arney)"
+        [ Segment "17" "2.49" "60.01"
+        , Segment "18" "0.10" "0.21"
         ]
     ]
 
@@ -87,7 +73,9 @@ splitEpisode e = mapM (splitOne (epDate e)) (epSegments e)
 
 glueEpisode :: Episode -> [FilePath] -> IO FilePath
 glueEpisode e chunks = do
-    let result = concat [ "done/"
+    let outDir = "done"
+    let result = concat [ outDir
+                        , "/"
                         , epDate e
                         , " - "
                         , epTitle e
@@ -102,18 +90,18 @@ glueEpisode e chunks = do
             systemOrDie "mp3wrap" (desired:chunks)
             return stupid
 
+    createDirectoryIfMissing False outDir
     renameFile glued desired
     return desired
 
-url = "http://www.camfm.co.uk/index.php?\
-      \option=com_radioshows&view=showpage&task=displayshowpage&id=104"
+url = "http://www.scienceoffiction.co.uk/"
 
 tagEpisode :: Episode -> Int -> Int -> FilePath -> IO ()
 tagEpisode e i n f = do
     let args = [ "--artist", "The Science of Fiction"
-               , "--album", "Season 2"
+               , "--album", "Season 3"
                , "--song", epTitle e
-               , "--year", "2011"
+               , "--year", "2012"
                , "--comment", url
                , "--track", show i
                , "--total", show n
