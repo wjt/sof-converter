@@ -31,20 +31,40 @@ data Segment =
 episodes :: [Episode]
 episodes =
     [
-    {-
-      Episode "20120212" "Errata"
-        [ Segment "17" "2.15.5" "59.57"
+      Episode "20110501" "Comic Book Science (with Ben Valsler)"
+        [ Segment "ThinkRadio Ep1a" "58.06" "EOF"
+        , Segment "ThinkRadio Ep1"   "0.04" "56.57"
         ]
-    , Episode "20120219" "Hybrids (with Djuke Veldhuis)"
-        [ Segment "17" "4.45" "60.0"
+    , Episode "20110508" "Doctor Who (with Michael Conterio)"
+        [ Segment "ThinkRadio Ep2a" "58.05" "59.59"
+        , Segment "ThinkRadio Ep2"   "0.06" "57.05"
         ]
-    , Episode "20120304" "Conspiracy"
-        [ Segment "17" "3.15" "59.55"
+    , Episode "20110515" "Computers (with Will Thompson)"
+        [ Segment "ThinkRadio Ep3a" "58.00" "EOF"
+        , Segment "ThinkRadio Ep3"   "0.00" "57.36"
         ]
-    ,-}
-      Episode "20120311" "Steampunk, Shams and Space Cowboys (with Kat Arney)"
-        [ Segment "17" "2.49" "60.01"
-        , Segment "18" "0.10" "0.21"
+    , Episode "20110522" "Fictional Scientist Grudge Match (with Will Thompson)"
+        [ Segment "ThinkRadio Ep4a" "58.25" "60.06"
+        , Segment "ThinkRadio Ep4"   "0.04" "59.01"
+        ]
+    , Episode "20110529" "Zombies (with Frank Swain and Thomas Wooley)" 
+        [ Segment "ThinkRadio - Zombies a" "59.52" "60.03"
+        , Segment "ThinkRadio - Zombies"   "0.00"  "58.43"
+        ]
+    , Episode "20110612" "Time Travel (with Andy Pontzen)"
+        [ Segment "ThinkRadio - Time Travel - Andy Ponztena" "57.29" "60.04"
+        , Segment "ThinkRadio - Time Travel - Andy Ponzten"  "0.00"  "59.04"
+        ]
+    , Episode "20110703" "Journey into the Fourth Dimension (with Prof. Andy Parker)"
+        [ Segment "ThinkRadio - Prof Andy Parker" "0.00" "60.00"
+        ]
+    , Episode "20110710" "Late Victorian Gothic Literature (with Dorée Carrier)"
+        [ Segment "ThinkRadio - Gothic Literatue - Doree-a" "58.12" "60.03"
+        , Segment "ThinkRadio - Gothic Literatue - Doree" "0.03" "59.43"
+        ]
+    , Episode "20110724" "Memory (with Dr Amy Milton)"
+        [ Segment "memorya" "57.07" "60.00"
+        , Segment "memory"  "0.00"  "57.00"
         ]
     ]
 
@@ -55,8 +75,8 @@ systemOrDie cmd args = do
         ExitFailure _ -> exitWith exitCode
 
 splitOne :: Date -> Segment -> IO FilePath
-splitOne date s = do
-    let input = date ++ segHour s ++ ".mp3"
+splitOne _date s = do
+    let input = segHour s ++ ".mp3"
         outputPattern = "wip/@f"
         output = "wip/" ++ input
 
@@ -99,9 +119,9 @@ url = "http://www.scienceoffiction.co.uk/"
 tagEpisode :: Episode -> Int -> Int -> FilePath -> IO ()
 tagEpisode e i n f = do
     let args = [ "--artist", "The Science of Fiction"
-               , "--album", "Season 3"
+               , "--album", "Season 1"
                , "--song", epTitle e
-               , "--year", "2012"
+               , "--year", take 4 (epDate e)
                , "--comment", url
                , "--track", show i
                , "--total", show n
