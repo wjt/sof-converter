@@ -2,7 +2,6 @@
 -- Usage:
 -- • Put all your raw episode files (yyyymmddhh.mp3) into a directory,
 --   along with an episodes.json file;
--- • Update 'tagEpisode';
 -- • Run this in that directory. It will put temporary files into 'wip' and
 --   finished items into 'done' below CWD.
 import Control.Monad
@@ -32,7 +31,8 @@ data Segment =
 $(deriveJSON (map toLower . drop 3) ''Segment)
 
 data Episode =
-    Episode { epDate :: Date
+    Episode { epNumber :: Integer
+            , epDate :: Date
             , epTitle :: String
             , epSegments :: [Segment]
             }
@@ -98,15 +98,19 @@ glueEpisode e chunks = do
 
 url = "http://www.scienceoffiction.co.uk/"
 
-tagEpisode :: String -> Episode -> Int -> Int -> FilePath -> IO ()
-tagEpisode seasonNumber e i n f = do
+tagEpisode :: String
+           -> Episode
+{-         -> Int -}
+           -> FilePath
+           -> IO ()
+tagEpisode seasonNumber e {-n-} f = do
     let args = [ "--artist", "The Science of Fiction"
                , "--album", "Season " ++ seasonNumber
                , "--song", epTitle e
                , "--year", take 4 (epDate e)
                , "--comment", url
-               , "--track", show i
-               , "--total", show n
+               , "--track", show (epNumber e)
+            {- , "--total", show n -}
                , f
                ]
 
@@ -116,12 +120,12 @@ process :: Season
         -> IO ()
 process season = do
     let episodes = seasonEpisodes season
-        n = length episodes
+     {- n = length episodes -}
 
-    ret <- forM (zip [1..] episodes) $ \(i, e) -> do
+    ret <- forM episodes $ \e -> do
         chunks <- splitEpisode e
         glued <- glueEpisode e chunks
-        tagEpisode (seasonNumber season) e i n glued
+        tagEpisode (seasonNumber season) e {-n-} glued
         return glued
 
     mapM_ putStrLn ret
