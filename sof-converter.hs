@@ -15,6 +15,7 @@ import qualified Data.Aeson.Types as AE
 import Data.Aeson.TH
 import Data.Attoparsec.ByteString.Lazy (parse, eitherResult)
 import Data.Char (toLower)
+import Data.Maybe (catMaybes)
 
 type Date = String
 type Hour = String
@@ -140,9 +141,16 @@ process season = do
     let episodes = seasonEpisodes season
      {- n = length episodes -}
 
-    ret <- forM episodes $ processOne season
+    ret <- forM episodes $ \e -> do
+        let name = episodeTargetName e
+        exists <- doesFileExist name
+        if not exists
+            then liftM Just $ processOne season e
+            else do
+                putStrLn $ "refusing to re-create " ++ name
+                return Nothing
 
-    mapM_ putStrLn ret
+    mapM_ putStrLn (catMaybes ret)
 
 main = do
     result <- fmap (parse json) $ C.readFile "episodes.json"
