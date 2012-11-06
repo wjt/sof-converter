@@ -73,17 +73,26 @@ splitOne date s = do
 splitEpisode :: Episode -> IO [FilePath]
 splitEpisode e = mapM (splitOne (epDate e)) (epSegments e)
 
+outDir :: FilePath
+outDir = "done"
+
+episodeBasename :: Episode
+                -> FilePath
+episodeBasename e =
+    concat [ outDir
+           , "/"
+           , epDate e
+           , " - "
+           , epTitle e
+           ]
+
+episodeTargetName :: Episode -> FilePath
+episodeTargetName e = episodeBasename e ++ ".mp3"
+
 glueEpisode :: Episode -> [FilePath] -> IO FilePath
 glueEpisode e chunks = do
-    let outDir = "done"
-    let result = concat [ outDir
-                        , "/"
-                        , epDate e
-                        , " - "
-                        , epTitle e
-                        ]
-        desired = result ++ ".mp3"
-        stupid = result ++ "_MP3WRAP.mp3"
+    let desired = episodeTargetName e
+        stupid = episodeBasename e ++ "_MP3WRAP.mp3"
 
     glued <- case chunks of
         []  -> error $ show e
