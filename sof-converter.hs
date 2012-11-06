@@ -116,17 +116,22 @@ tagEpisode seasonNumber e {-n-} f = do
 
     systemOrDie "id3tag" args
 
+processOne :: Season
+           -> Episode
+           -> IO FilePath
+processOne season e = do
+    chunks <- splitEpisode e
+    glued <- glueEpisode e chunks
+    tagEpisode (seasonNumber season) e glued
+    return glued
+
 process :: Season
         -> IO ()
 process season = do
     let episodes = seasonEpisodes season
      {- n = length episodes -}
 
-    ret <- forM episodes $ \e -> do
-        chunks <- splitEpisode e
-        glued <- glueEpisode e chunks
-        tagEpisode (seasonNumber season) e {-n-} glued
-        return glued
+    ret <- forM episodes $ processOne season
 
     mapM_ putStrLn ret
 
