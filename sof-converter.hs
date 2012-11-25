@@ -17,6 +17,8 @@ import Data.Attoparsec.ByteString.Lazy (parse, eitherResult)
 import Data.Char (toLower)
 import Data.Maybe (catMaybes)
 
+import Paths_sof_converter (getDataFileName)
+
 type Date = String
 type Hour = String
 type Point = String
@@ -95,15 +97,15 @@ glueEpisode e chunks = do
     let desired = episodeTargetName e
         stupid = episodeBasename e ++ "_MP3WRAP.mp3"
 
-    glued <- case chunks of
-        []  -> error $ show e
-        [f] -> return f
-        _   -> do
-            systemOrDie "mp3wrap" (desired:chunks)
-            return stupid
+    jingle <- getDataFileName "beta-jingle.mp3"
+    let chunks' = jingle:chunks ++ [jingle]
+
+    systemOrDie "mp3wrap" (desired:chunks')
 
     createDirectoryIfMissing False outDir
-    renameFile glued desired
+    -- prepending a 2-second vbr mp3 makes the player think the file is 2
+    -- seconds long, so we need to fix up the vbr headers.
+    systemOrDie "vbrfix" [stupid, desired]
     return desired
 
 url = "http://www.scienceoffiction.co.uk/"

@@ -11,11 +11,12 @@ Copyright:           2011–2012 Will Thompson
 Category:            Sound
 Build-type:          Simple
 Cabal-version:       >=1.2
-
+data-files:          beta-jingle.mp3
+data-dir:            data
 
 Executable sof-converter
   Main-is: sof-converter.hs
-  Build-depends: haskell2010
+  Build-depends: base
                , aeson
                , attoparsec
                , bytestring
