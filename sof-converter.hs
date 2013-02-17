@@ -155,7 +155,8 @@ process season = do
                 putStrLn $ "refusing to re-create " ++ name
                 return Nothing
 
-    mapM_ putStrLn (catMaybes ret)
+    putStrLn "Finished! Here are some files I made:"
+    mapM_ (putStrLn . ("- " ++)) (catMaybes ret)
 
 main = do
     args <- getArgs
