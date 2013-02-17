@@ -114,18 +114,19 @@ url = "http://www.scienceoffiction.co.uk/"
 
 tagEpisode :: String
            -> Episode
-{-         -> Int -}
+           -> Maybe Int
            -> FilePath
            -> IO ()
-tagEpisode seasonNumber e {-n-} f = do
+tagEpisode seasonNumber e n_ f = do
     let args = [ "--artist", "The Science of Fiction"
                , "--album", "Season " ++ seasonNumber
                , "--song", epTitle e
                , "--year", take 4 (epDate e)
                , "--comment", url
                , "--track", show (epNumber e)
-            {- , "--total", show n -}
-               , f
+               ]
+               ++ maybe [] (\n -> ["--total", show n]) n_ ++
+               [ f
                ]
 
     systemOrDie "id3tag" args
@@ -136,7 +137,7 @@ processOne :: Season
 processOne season e = do
     chunks <- splitEpisode e
     glued <- glueEpisode e chunks
-    tagEpisode (seasonNumber season) e glued
+    tagEpisode (seasonNumber season) e Nothing glued
     return glued
 
 process :: Season
