@@ -55,6 +55,7 @@ data Season =
 $(deriveJSON (map toLower . drop 6) ''Season)
 
 systemOrDie cmd args = do
+    putStrLn $ unwords (">>>":cmd:args)
     exitCode <- rawSystem cmd args
     case exitCode of
         ExitSuccess -> return ()
