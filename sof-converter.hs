@@ -8,6 +8,7 @@ import Control.Monad
 import System.Process
 import System.Exit
 import System.Directory
+import System.Environment (getArgs)
 
 import qualified Data.ByteString.Lazy.Char8 as C
 import Data.Aeson
@@ -155,9 +156,14 @@ process season = do
     mapM_ putStrLn (catMaybes ret)
 
 main = do
+    args <- getArgs
+
     result <- fmap (parse json) $ C.readFile "episodes.json"
     case eitherResult result of
         Left e -> error $ "grr: " ++ e
         Right value -> case AE.parseEither parseJSON value of
             Left e -> error e
-            Right episodes -> process episodes
+            Right season -> case args of
+                [] -> process season
+                ["--just-tag"] -> forM_ (seasonEpisodes season) $ \episode -> do
+                    tagEpisode (seasonNumber season) episode Nothing (episodeTargetName episode)
